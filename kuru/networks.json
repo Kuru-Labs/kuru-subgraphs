@@ -1,0 +1,8 @@
+{
+  "mainnet": {
+    "OrderBook": {
+      "address": "0x83b24E8F72f7aD60cEa81f3925Ee54F70608A534",
+      "startBlock": 0
+    }
+  }
+}

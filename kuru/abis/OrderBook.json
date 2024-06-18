@@ -1,40 +1,36 @@
 [
+  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
   {
+    "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
         "internalType": "address",
-        "name": "_baseAssetAddress",
+        "name": "previousAdmin",
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "_baseAssetDecimals",
-        "type": "uint256"
-      },
-      {
+        "indexed": false,
         "internalType": "address",
-        "name": "_quoteAssetAddress",
+        "name": "newAdmin",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_quoteAssetDecimals",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_marginAccountAddress",
-        "type": "address"
-      },
-      { "internalType": "uint96", "name": "_sizePrecision", "type": "uint96" },
-      { "internalType": "uint24", "name": "_pricePrecision", "type": "uint24" },
-      { "internalType": "uint96", "name": "_tickSize", "type": "uint96" },
-      { "internalType": "uint96", "name": "_minSize", "type": "uint96" },
-      { "internalType": "uint96", "name": "_maxSize", "type": "uint96" },
-      { "internalType": "uint256", "name": "_takerFeeBps", "type": "uint256" }
+      }
     ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
+    "name": "AdminChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "beacon",
+        "type": "address"
+      }
+    ],
+    "name": "BeaconUpgraded",
+    "type": "event"
   },
   {
     "anonymous": false,
@@ -94,28 +90,15 @@
         "internalType": "uint40[]",
         "name": "orderId",
         "type": "uint40[]"
-      }
-    ],
-    "name": "OrdersCanceled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint40[]",
-        "name": "orderIds",
-        "type": "uint40[]"
       },
       {
         "indexed": false,
-        "internalType": "uint96[]",
-        "name": "updatedSizes",
-        "type": "uint96[]"
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
       }
     ],
-    "name": "OrdersUpdated",
+    "name": "OrdersCanceled",
     "type": "event"
   },
   {
@@ -148,6 +131,24 @@
       },
       {
         "indexed": false,
+        "internalType": "address",
+        "name": "makerAddress",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "isBuy",
+        "type": "bool"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint24",
+        "name": "price",
+        "type": "uint24"
+      },
+      {
+        "indexed": false,
         "internalType": "uint96",
         "name": "updatedSize",
         "type": "uint96"
@@ -169,9 +170,23 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "implementation",
+        "type": "address"
+      }
+    ],
+    "name": "Upgraded",
+    "type": "event"
+  },
+  {
     "inputs": [
       { "internalType": "uint24", "name": "_price", "type": "uint24" },
-      { "internalType": "uint96", "name": "size", "type": "uint96" }
+      { "internalType": "uint96", "name": "size", "type": "uint96" },
+      { "internalType": "bool", "name": "_postOnly", "type": "bool" }
     ],
     "name": "addBuyOrder",
     "outputs": [],
@@ -181,7 +196,8 @@
   {
     "inputs": [
       { "internalType": "uint24", "name": "_price", "type": "uint24" },
-      { "internalType": "uint96", "name": "size", "type": "uint96" }
+      { "internalType": "uint96", "name": "size", "type": "uint96" },
+      { "internalType": "bool", "name": "_postOnly", "type": "bool" }
     ],
     "name": "addSellOrder",
     "outputs": [],
@@ -199,17 +215,61 @@
   },
   {
     "inputs": [
-      { "internalType": "uint40[]", "name": "_orderIds", "type": "uint40[]" },
+      { "internalType": "uint24[]", "name": "buyPrices", "type": "uint24[]" },
+      { "internalType": "uint96[]", "name": "buySizes", "type": "uint96[]" },
+      { "internalType": "uint24[]", "name": "sellPrices", "type": "uint24[]" },
+      { "internalType": "uint96[]", "name": "sellSizes", "type": "uint96[]" },
       {
-        "internalType": "uint96[]",
-        "name": "_updatedSizes",
-        "type": "uint96[]"
+        "internalType": "uint40[]",
+        "name": "orderIdsToCancel",
+        "type": "uint40[]"
       },
-      { "internalType": "bool", "name": "_useMargin", "type": "bool" }
+      { "internalType": "bool", "name": "postOnly", "type": "bool" }
     ],
-    "name": "decreaseOrders",
+    "name": "batchUpdate",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "buyOrdersLeft",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "collectFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_maker", "type": "address" }
+    ],
+    "name": "getActiveBuysForAddress",
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_maker", "type": "address" }
+    ],
+    "name": "getActiveOrdersForAddress",
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_maker", "type": "address" }
+    ],
+    "name": "getActiveSellsForAddress",
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -223,6 +283,50 @@
     "inputs": [],
     "name": "getL2Book",
     "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getMarketParams",
+    "outputs": [
+      { "internalType": "uint24", "name": "", "type": "uint24" },
+      { "internalType": "uint96", "name": "", "type": "uint96" },
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "uint96", "name": "", "type": "uint96" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint40", "name": "_orderId", "type": "uint40" }
+    ],
+    "name": "getOrderDetails",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "ownerAddress",
+            "type": "address"
+          },
+          { "internalType": "uint96", "name": "size", "type": "uint96" },
+          { "internalType": "uint40", "name": "prev", "type": "uint40" },
+          { "internalType": "uint40", "name": "next", "type": "uint40" },
+          { "internalType": "uint24", "name": "price", "type": "uint24" },
+          { "internalType": "bool", "name": "isBuy", "type": "bool" }
+        ],
+        "internalType": "struct OrderBook.Order",
+        "name": "",
+        "type": "tuple"
+      },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -249,7 +353,44 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_owner", "type": "address" }
+      { "internalType": "address", "name": "_owner", "type": "address" },
+      {
+        "internalType": "enum IOrderBook.OrderBookType",
+        "name": "_type",
+        "type": "uint8"
+      },
+      {
+        "internalType": "address",
+        "name": "_baseAssetAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_baseAssetDecimals",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_quoteAssetAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_quoteAssetDecimals",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_marginAccountAddress",
+        "type": "address"
+      },
+      { "internalType": "uint96", "name": "_sizePrecision", "type": "uint96" },
+      { "internalType": "uint24", "name": "_pricePrecision", "type": "uint24" },
+      { "internalType": "uint96", "name": "_tickSize", "type": "uint96" },
+      { "internalType": "uint96", "name": "_minSize", "type": "uint96" },
+      { "internalType": "uint96", "name": "_maxSize", "type": "uint96" },
+      { "internalType": "uint256", "name": "_takerFeeBps", "type": "uint256" },
+      { "internalType": "uint256", "name": "_makerFeeBps", "type": "uint256" }
     ],
     "name": "initialize",
     "outputs": [],
@@ -276,8 +417,8 @@
       { "internalType": "bool", "name": "_isFillOrKill", "type": "bool" }
     ],
     "name": "placeAndExecuteMarketBuy",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -286,14 +427,15 @@
       { "internalType": "bool", "name": "_isFillOrKill", "type": "bool" }
     ],
     "name": "placeAndExecuteMarketSell",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "payable",
     "type": "function"
   },
   {
     "inputs": [
       { "internalType": "uint24[]", "name": "_prices", "type": "uint24[]" },
-      { "internalType": "uint96[]", "name": "_sizes", "type": "uint96[]" }
+      { "internalType": "uint96[]", "name": "_sizes", "type": "uint96[]" },
+      { "internalType": "bool", "name": "_postOnly", "type": "bool" }
     ],
     "name": "placeMultipleBuyOrders",
     "outputs": [],
@@ -303,11 +445,19 @@
   {
     "inputs": [
       { "internalType": "uint24[]", "name": "_prices", "type": "uint24[]" },
-      { "internalType": "uint96[]", "name": "_sizes", "type": "uint96[]" }
+      { "internalType": "uint96[]", "name": "_sizes", "type": "uint96[]" },
+      { "internalType": "bool", "name": "_postOnly", "type": "bool" }
     ],
     "name": "placeMultipleSellOrders",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxiableUUID",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -377,12 +527,46 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "sellOrdersLeft",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "address", "name": "newOwner", "type": "address" }
     ],
     "name": "transferOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      }
+    ],
+    "name": "upgradeTo",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newImplementation",
+        "type": "address"
+      },
+      { "internalType": "bytes", "name": "data", "type": "bytes" }
+    ],
+    "name": "upgradeToAndCall",
+    "outputs": [],
+    "stateMutability": "payable",
     "type": "function"
   }
 ]

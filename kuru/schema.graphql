@@ -1,3 +1,20 @@
+type AdminChanged @entity(immutable: true) {
+  id: Bytes!
+  previousAdmin: Bytes! # address
+  newAdmin: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type BeaconUpgraded @entity(immutable: true) {
+  id: Bytes!
+  beacon: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
 type Initialized @entity(immutable: true) {
   id: Bytes!
   version: Int! # uint8
@@ -21,15 +38,7 @@ type OrderCreated @entity(immutable: true) {
 type OrdersCanceled @entity(immutable: true) {
   id: Bytes!
   orderId: [BigInt!]! # uint40[]
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type OrdersUpdated @entity(immutable: true) {
-  id: Bytes!
-  orderIds: [BigInt!]! # uint40[]
-  updatedSizes: [BigInt!]! # uint96[]
+  owner: Bytes! # address
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
@@ -47,6 +56,9 @@ type OwnershipTransferred @entity(immutable: true) {
 type Trade @entity(immutable: true) {
   id: Bytes!
   orderId: BigInt! # uint40
+  makerAddress: Bytes! # address
+  isBuy: Boolean! # bool
+  price: Int! # uint24
   updatedSize: BigInt! # uint96
   takerAddress: Bytes! # address
   filledSize: BigInt! # uint96
@@ -54,38 +66,10 @@ type Trade @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
-type RouterInitialized @entity(immutable: true) {
-  id: Bytes!
-  version: Int! # uint8
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
 
-type MarketRegistered @entity(immutable: true) {
+type Upgraded @entity(immutable: true) {
   id: Bytes!
-  baseAsset: Bytes! # address
-  quoteAsset: Bytes! # address
-  market: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type MarketUpdated @entity(immutable: true) {
-  id: Bytes!
-  baseAsset: Bytes! # address
-  quoteAsset: Bytes! # address
-  market: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RouterOwnershipTransferred @entity(immutable: true) {
-  id: Bytes!
-  previousOwner: Bytes! # address
-  newOwner: Bytes! # address
+  implementation: Bytes! # address
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
