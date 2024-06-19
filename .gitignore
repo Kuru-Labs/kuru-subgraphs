@@ -1,5 +1,6 @@
 # Graph CLI generated artifacts
 build/
+data/
 generated/
 
 # Dependency directories
